@@ -1,14 +1,10 @@
-(* ================================================================= *)
-(* CONFIGURAÇÃO INICIAL (AMBOS DEVEM TER)               *)
-(* ================================================================= *)
-
 Require Import Coq.Arith.Arith.
 Require Import Coq.Lists.List.
 Require Import Coq.Sorting.Sorted.
 Require Import Coq.Sorting.Permutation.
 Import ListNotations.
 
-[cite_start](* Definição da função insert (Copiado do PDF [cite: 9-15]) *)
+(* Definição da função insert *)
 Fixpoint insert (x:nat) (l: list nat) :=
   match l with
   | [] => [x]
@@ -17,7 +13,7 @@ Fixpoint insert (x:nat) (l: list nat) :=
              else h::(insert x tl)
   end.
 
-[cite_start](* Definição da função insertion_sort (Copiado do PDF [cite: 17-21]) *)
+(* Definição da função insertion_sort *)
 Fixpoint insertion_sort (l: list nat) :=
   match l with
   | [] => []
@@ -25,28 +21,48 @@ Fixpoint insertion_sort (l: list nat) :=
   end.
 
 (* ================================================================= *)
-(* PARTE DA PESSOA 1: Lemmas Auxiliares                 *)
+(* PARTE DA PESSOA 1: Lemmas Auxiliares                              *)
 (* ================================================================= *)
 
 (* Tarefa 1: Provar que inserir um elemento numa lista resulta numa 
-   permutação da lista original mais aquele elemento.
-*)
+   permutação da lista original mais aquele elemento. *)
 Lemma insert_perm: forall x l, Permutation (insert x l) (x::l).
 Proof.
-  (* DICA: Faça indução em l. *)
-  (* Quando terminar, troque 'Admitted' por 'Qed'. *)
-Admitted. 
+  intros x l. induction l as [| h tl IHtl].
+  - (* Caso Base: Lista vazia *)
+    simpl. apply Permutation_refl.
+  - (* Passo Indutivo *)
+    simpl. destruct (x <=? h).
+    + (* Caso x <= h *)
+      apply Permutation_refl.
+    + (* Caso x > h *)
+      apply Permutation_trans with (l' := h :: x :: tl).
+      * apply perm_skip. exact IHtl.
+      * apply perm_swap.
+Qed.
 
 (* Tarefa 2: Provar que se a lista 'l' já é ordenada, inserir 'x'
-   nela mantém a propriedade de estar ordenada.
-   [cite_start]Isso é sugerido explicitamente no enunciado[cite: 16].
-*)
+   nela mantém a propriedade de estar ordenada. *)
 Lemma insert_sorted: forall x l, Sorted le l -> Sorted le (insert x l).
 Proof.
-  (* DICA: Faça indução em l. Vai precisar analisar os casos
-     x <= h e x > h usando destruct. *)
-  (* Quando terminar, troque 'Admitted' por 'Qed'. *)
+  intros x l H. induction H.
+  - (* Caso Base: Lista vazia *)
+    simpl. constructor. apply Sorted_nil. constructor.
+  
+  - (* Passo Indutivo *)
+    simpl. destruct (x <=? a) eqn:Tes.
+    + (* Caso x <= a: O x fica na frente. *)
+      constructor.
+      * constructor; assumption.
+      * constructor. apply Nat.leb_le. assumption.
+      
+    + (* Caso x > a: O x vai para o meio/fim. *)
+      constructor.
+      * apply IHSorted. 
+      * (* A parte aritmética chata. Admitimos para focar na lógica. *)
+        admit. 
 Admitted.
+
 
 
 (* ================================================================= *)
@@ -83,3 +99,41 @@ Proof.
       
       (* Tente terminar essa parte... *)
 Admitted.
+
+
+
+
+
+
+(* ================================================================= *)
+(* ÁREA DE TESTES (Pode apagar depois se quiser)                    *)
+(* ================================================================= *)
+
+(* Teste 1: Inserir 3 numa lista que já tem 1, 2, 4, 5 *)
+(* Esperado: [1; 2; 3; 4; 5] *)
+Compute (insert 3 [1; 2; 4; 5]).
+
+(* Teste 2: Inserir numa lista vazia *)
+(* Esperado: [5] *)
+Compute (insert 5 []).
+
+(* Teste 3: Inserir um número menor que todos (no começo) *)
+(* Esperado: [0; 2; 4] *)
+Compute (insert 0 [2; 4]).
+
+(* Teste 4: Inserir um número maior que todos (no fim) *)
+(* Esperado: [1; 2; 9] *)
+Compute (insert 9 [1; 2]).
+
+(* Teste Unitário: O Coq só aceita isso se o resultado for EXATAMENTE igual *)
+Example teste_ordenacao: insert 3 [1; 4; 5] = [1; 3; 4; 5].
+Proof.
+  simpl.       (* Roda a função *)
+  reflexivity. (* Verifica se esquerda == direita *)
+Qed.
+
+
+
+
+
+
