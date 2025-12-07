@@ -1,7 +1,8 @@
 # 🛡️ Formalização do Insertion Sort em Coq/Rocq
 
 Este repositório contém o projeto final da disciplina de **Lógica Computacional 1** (UnB - 2025/2), focado na verificação formal da correção do algoritmo de ordenação *Insertion Sort* utilizando o assistente de provas **Coq (Rocq)**.
-
+[Letícia Xavier de Almeida Silva]
+[Rafael Silva Lima]
 ## 🎯 Objetivo
 Demonstrar matematicamente que o algoritmo `insertion_sort` satisfaz as seguintes propriedades:
 1.  **Ordenação:** A lista resultante está devidamente ordenada segundo a relação `le` ($\le$).
@@ -36,5 +37,4 @@ Para compilar o projeto e verificar a validade das provas via terminal, utilize 
 ```bash
 coqc InsertionSort.v
 
-[Letícia Xavier de Almeida Silva]
-[Rafael Silva Lima]
+
